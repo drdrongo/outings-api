@@ -1,0 +1,35 @@
+version: '3.9'
+services:
+  db:
+    image: postgres
+    volumes:
+      - ./tmp/db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: yoshi
+    ports:
+      - "5432:5432"
+  backend:
+    build:
+      context: .
+      dockerfile: ./Backend.Dockerfile
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3001 -b '0.0.0.0'"
+    volumes:
+      - .:/outing-planner
+    ports:
+      - "3001:3001"
+    depends_on:
+      - db
+    environment:
+      POSTGRES_PASSWORD: yoshi
+  # frontend:
+  #   image: "node:10-alpine"
+  #   working_dir: /outing-planner
+  #   volumes:
+  #     - .:/outing-planner
+  #   ports:
+  #     - "3000:3000"
+  #   build:
+  #     context: .
+  #     dockerfile: ./Frontend.Dockerfile
+  #   depends_on:
+  #     - backend
