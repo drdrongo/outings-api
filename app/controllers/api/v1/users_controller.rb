@@ -1,10 +1,9 @@
 class Api::V1::UsersController < ApplicationController
   wrap_parameters include: User.attribute_names + [:password] # Used because password was getting stripped by strong params
 
-  # before_action :authorize_request, except: :create
+  before_action :authorize_request, except: :create
 
   # before_action :find_user, except: %i[create index]
-
 
   def show
     params[:id] && @user = User.find(params[:id])
