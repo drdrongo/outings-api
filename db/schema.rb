@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_06_04_133938) do
+ActiveRecord::Schema.define(version: 2022_12_05_154452) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -50,8 +50,10 @@ ActiveRecord::Schema.define(version: 2022_06_04_133938) do
     t.integer "price", default: 0, null: false
     t.string "genre", default: "", null: false
     t.text "images", default: [], null: false, array: true
+    t.bigint "user_id", null: false
     t.index ["couple_id"], name: "index_outings_on_couple_id"
     t.index ["spot_id"], name: "index_outings_on_spot_id"
+    t.index ["user_id"], name: "index_outings_on_user_id"
   end
 
   create_table "spots", force: :cascade do |t|
@@ -59,7 +61,7 @@ ActiveRecord::Schema.define(version: 2022_06_04_133938) do
     t.integer "mood", default: 0, null: false
     t.string "title"
     t.string "location", default: "", null: false
-    t.integer "type", default: 0, null: false
+    t.integer "spot_type", default: 0, null: false
     t.bigint "user_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -82,5 +84,6 @@ ActiveRecord::Schema.define(version: 2022_06_04_133938) do
   add_foreign_key "outing_reviews", "users"
   add_foreign_key "outings", "couples"
   add_foreign_key "outings", "spots"
+  add_foreign_key "outings", "users"
   add_foreign_key "spots", "users"
 end
