@@ -66,7 +66,29 @@ unless couple
   )
 end
 
+
+u1 = User.find(1)
+u2 = User.find(2)
+
+Spot.delete_all
+
+5.times do
+  Spot.create!(
+    user_id: u1.id,
+    title: Faker::Address.city,
+    location: Faker::Address.city
+  )
+end
+5.times do
+  Spot.create!(
+    user_id: u2.id,
+    title: Faker::Address.city,
+    location: Faker::Address.city
+  )
+end
+
 Outing.delete_all
+
 
 10.times do
   outing = Outing.new(
@@ -79,6 +101,9 @@ Outing.delete_all
     mood: rand(1..5),
     genre: rand(1..10),
     rating: rand(1..5),
+    images: ["https://picsum.photos/#{rand(1..200)}", "https://picsum.photos/#{rand(1..200)}"],
+    user_id: rand() > 0.5 ? u1.id : u2.id,
+    spot_id: rand(1..10)
   )
   outing.save
 end

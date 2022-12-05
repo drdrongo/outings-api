@@ -1,6 +1,7 @@
 class Outing < ApplicationRecord
   belongs_to :couple
-  # belongs_to :spot
+  belongs_to :spot
+  belongs_to :user
   has_many :outing_reviews
 
   def self.genres
