@@ -34,7 +34,6 @@
 #   total_outings: 0
 # )
 # couple.save!
-
 couple = Couple.find_by_id 1
 
 unless couple
@@ -70,28 +69,30 @@ end
 u1 = User.find(1)
 u2 = User.find(2)
 
+Outing.delete_all
 Spot.delete_all
 
+spot_ids = []
+
 5.times do
-  Spot.create!(
+  spot = Spot.create!(
     user_id: u1.id,
     title: Faker::Address.city,
     location: Faker::Address.city
   )
+  spot_ids.push(spot.id)
 end
 5.times do
-  Spot.create!(
+  spot = Spot.create!(
     user_id: u2.id,
     title: Faker::Address.city,
     location: Faker::Address.city
   )
+  spot_ids.push(spot.id)
 end
 
-Outing.delete_all
-
-
-10.times do
-  outing = Outing.new(
+for idx in 0..9 do
+  Outing.create!(
     couple_id: couple.id,
     is_complete: false,
     is_favorite: false,
@@ -101,9 +102,8 @@ Outing.delete_all
     mood: rand(1..5),
     genre: rand(1..10),
     rating: rand(1..5),
-    images: ["https://picsum.photos/#{rand(1..200)}", "https://picsum.photos/#{rand(1..200)}"],
-    user_id: rand() > 0.5 ? u1.id : u2.id,
-    spot_id: rand(1..10)
+    images: ["https://picsum.photos/200/#{200 + idx}", "https://picsum.photos/#{200 + idx}/200"],
+    user_id: rand > 0.5 ? u1.id : u2.id,
+    spot_id: spot_ids[idx]
   )
-  outing.save
 end
