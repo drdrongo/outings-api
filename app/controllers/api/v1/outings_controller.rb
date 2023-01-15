@@ -1,10 +1,11 @@
 class Api::V1::OutingsController < ApplicationController
+  before_action :set_outing, only: %i[show update destroy]
+
   def show
-    outing = Outing.find(params[:id])
-    if outing
-      render json: { data: outing }, status: 200
+    if @outing
+      render json: { data: @outing }, status: 200
     else
-      render json: { errors: outing.errors.full_messages }, status: 422
+      render json: { errors: @outing.errors.full_messages }, status: 422
     end
   end
 
@@ -18,33 +19,42 @@ class Api::V1::OutingsController < ApplicationController
       end
     end
 
-    @outings = Outing
-               .where(where)
-               .joins(:user, :spot)
-               .select('outings.*, spots.location, users.f_name AS user_f_name, users.image AS user_image')
+
+    is_last_page = Outing.page(params[:page] || 1).last_page?
+
+    @outings = Outing.joins('LEFT JOIN users ON users.id = outings.user_id LEFT JOIN spots ON spots.id = outings.spot_id')
+                     .where(where)
+                     .page(params[:page] || 1)
+                     .per(7)
+                     .select('outings.*, spots.location, users.f_name AS user_f_name, users.image AS user_image')
 
     if @outings
-      render json: { data: @outings }, status: 200
+      render json: { data: @outings, is_last_page: is_last_page }, status: 200
     else
       render json: { errors: @outings.errors.full_messages }, status: 422
     end
   end
 
   def create
+
     response = Outing.create!(outing_params)
     render json: response
   end
 
-  def delete; end
+  def destroy
+    @outing.destroy
+    if @outing.destroyed?
+      render json: { success: true }, status: 200
+    else
+      render json: { errors: @outing.errors.full_messages }, status: 422
+    end
+  end
 
   def update
-    outing = Outing.find(params[:id])
-    if outing
-      outing.update(params)
-      # outing.update(is_favorite: !outing.is_favorite)
-      render json: { data: outing }, status: 200
+    if @outing.update(outing_params)
+      render json: { data: @outing }, status: 200
     else
-      render json: { errors: outing.errors.full_messages }, status: 422
+      render json: { errors: @outing.errors.full_messages }, status: 422
     end
   end
 
@@ -52,8 +62,16 @@ class Api::V1::OutingsController < ApplicationController
 
   def outing_params
     params.require(:outing).permit(
+      :id,
       :couple_id, :spot_id, :rating, :date_time, :images, :is_complete,
-      :is_favorite, :title, :description, :price, :mood, :genre
+      :is_favorite, :title, :description, :price, :mood, :genre,
+      :user_id,
+      :page
     )
   end
+
+  def set_outing
+    @outing = Outing.find(params[:id])
+  end
+
 end

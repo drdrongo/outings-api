@@ -55,3 +55,6 @@ gem 'bcrypt', '~> 3.1.7'
 gem 'jbuilder', '~> 2.7'
 
 gem 'dotenv-rails'
+
+# Allows for pagination in queries
+gem 'kaminari'

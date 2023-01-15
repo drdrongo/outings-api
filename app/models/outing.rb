@@ -1,8 +1,10 @@
 class Outing < ApplicationRecord
   belongs_to :couple
-  belongs_to :spot
+  belongs_to :spot, optional: true
   belongs_to :user
   has_many :outing_reviews
+
+  paginates_per 7
 
   def self.genres
     %w[Active Chill Culture Food Nature Party Social Stay-in]
